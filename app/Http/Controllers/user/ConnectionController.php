@@ -3,10 +3,46 @@
 namespace App\Http\Controllers;
 
 use App\Models\Connection;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class ConnectionController extends Controller
 {
+
+    // =========================
+    // HALAMAN CONNECTION
+    // =========================
+    public function index()
+    {
+        $userId = Auth::id();
+
+        // semua user selain diri sendiri
+        $users = User::where('id', '!=', $userId)->get();
+
+        // request yang masuk
+        $requests = Connection::where('receiver_id', $userId)
+            ->where('status', 'pending')
+            ->get();
+
+        // connection yang sudah accepted
+        $connections = Connection::where(function ($query) use ($userId) {
+                $query->where('requester_id', $userId)
+                      ->orWhere('receiver_id', $userId);
+            })
+            ->where('status', 'accepted')
+            ->get();
+
+        return view('connections.index', compact(
+            'users',
+            'requests',
+            'connections'
+        ));
+    }
+
+
+    // =========================
+    // SEND REQUEST
+    // =========================
     public function sendRequest($receiverId)
     {
         $userId = Auth::id();
@@ -15,7 +51,7 @@ class ConnectionController extends Controller
             return redirect()->back();
         }
 
-        // Cek reverse request (auto accept)
+        // cek reverse request (auto accept)
         $reverse = Connection::where('requester_id', $receiverId)
             ->where('receiver_id', $userId)
             ->where('status', 'pending')
@@ -30,7 +66,7 @@ class ConnectionController extends Controller
                 ->with('success', 'You are now connected!');
         }
 
-        // Cek kalau sudah ada
+        // cek kalau sudah ada
         $exists = Connection::where(function ($query) use ($userId, $receiverId) {
             $query->where('requester_id', $userId)
                   ->where('receiver_id', $receiverId);
@@ -43,7 +79,7 @@ class ConnectionController extends Controller
             return redirect()->back();
         }
 
-        // Buat request baru
+        // buat request baru
         Connection::create([
             'requester_id' => $userId,
             'receiver_id' => $receiverId,
@@ -54,6 +90,10 @@ class ConnectionController extends Controller
             ->with('success', 'Connection request sent!');
     }
 
+
+    // =========================
+    // ACCEPT REQUEST
+    // =========================
     public function accept($id)
     {
         $connection = Connection::where('receiver_id', Auth::id())
@@ -65,9 +105,14 @@ class ConnectionController extends Controller
             'status' => 'accepted'
         ]);
 
-        return redirect()->back();
+        return redirect()->back()
+            ->with('success', 'Connection accepted!');
     }
 
+
+    // =========================
+    // REMOVE CONNECTION
+    // =========================
     public function remove($id)
     {
         Connection::where(function ($query) use ($id) {
@@ -81,4 +126,5 @@ class ConnectionController extends Controller
         return redirect()->back()
             ->with('success', 'Connection removed.');
     }
+
 }

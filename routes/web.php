@@ -1,11 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\CommentController;
-use App\Http\Controllers\LikeController;
-use App\Http\Controllers\ConnectionController;
+use App\Http\Controllers\post\PostController;
+use App\Http\Controllers\post\CommentController;
+use App\Http\Controllers\post\LikeController;
+use App\Http\Controllers\user\ConnectionController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\user\ProfileController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminEventController;
+use App\Http\Controllers\Admin\AdminUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,21 +20,19 @@ use App\Http\Controllers\AuthController;
 // =====================
 // ROOT
 // =====================
-
-// Kalau belum login → ke login
-// Kalau sudah login → ke posts
 Route::get('/', function () {
-    return auth()->check()
-        ? redirect()->route('posts.index')
-        : redirect()->route('login');
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+    return auth()->user()->role === 'admin'
+        ? redirect()->route('admin.dashboard')
+        : redirect()->route('posts.index');
 });
 
 
 // =====================
 // AUTH ROUTES
 // =====================
-
-// Login
 Route::get('/login', [AuthController::class, 'showLogin'])
     ->middleware('guest')
     ->name('login');
@@ -38,7 +40,6 @@ Route::get('/login', [AuthController::class, 'showLogin'])
 Route::post('/login', [AuthController::class, 'login'])
     ->middleware('guest');
 
-// Register
 Route::get('/register', [AuthController::class, 'showRegister'])
     ->middleware('guest')
     ->name('register');
@@ -46,44 +47,68 @@ Route::get('/register', [AuthController::class, 'showRegister'])
 Route::post('/register', [AuthController::class, 'register'])
     ->middleware('guest');
 
-// Logout
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
 
 // =====================
-// ROUTE YANG BUTUH LOGIN
+// ADMIN ROUTES
+// =====================
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+        ->name('dashboard');
+
+    Route::resource('events', AdminEventController::class);
+
+    Route::get('/events/{event}/participants', [AdminEventController::class, 'participants'])
+        ->name('events.participants');
+
+    Route::resource('users', AdminUserController::class);
+
+});
+
+
+// =====================
+// USER ROUTES
 // =====================
 Route::middleware('auth')->group(function () {
 
-    // CRUD Post
+    // INTRO SCREEN
+    Route::get('/intro', function () {
+        return view('intro');
+    })->name('intro');
+
+    // POSTS
     Route::resource('posts', PostController::class);
 
-    // Comment
-    Route::post('/posts/{post}/comment',
-        [CommentController::class, 'store'])
+    // COMMENTS
+    Route::post('/posts/{post}/comment', [CommentController::class, 'store'])
         ->name('comments.store');
 
-    Route::delete('/comments/{comment}',
-        [CommentController::class, 'destroy'])
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])
         ->name('comments.destroy');
 
-    // Like
-    Route::post('/posts/{post}/like',
-        [LikeController::class, 'toggle'])
+    // LIKES
+    Route::post('/posts/{post}/like', [LikeController::class, 'toggle'])
         ->name('posts.like');
 
-    // Connection
-    Route::post('/connect/{id}',
-        [ConnectionController::class, 'sendRequest'])
+    // CONNECTIONS
+    Route::get('/connections', [ConnectionController::class, 'index'])
+        ->name('connections.index');
+
+    Route::post('/connect/{id}', [ConnectionController::class, 'sendRequest'])
         ->name('connect.send');
 
-    Route::post('/connect/{id}/accept',
-        [ConnectionController::class, 'accept'])
+    Route::post('/connect/{id}/accept', [ConnectionController::class, 'accept'])
         ->name('connect.accept');
 
-    Route::delete('/connect/{id}',
-        [ConnectionController::class, 'remove'])
+    Route::delete('/connect/{id}', [ConnectionController::class, 'remove'])
         ->name('connect.remove');
+
+    // PROFILE
+    Route::get('/profile', [ProfileController::class, 'index'])
+        ->name('profile.index');
+
 });

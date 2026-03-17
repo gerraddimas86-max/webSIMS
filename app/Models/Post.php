@@ -6,7 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
-    protected $fillable = ['user_id', 'title', 'content'];
+    protected $fillable = [
+        'user_id',
+        'title',
+        'content'
+    ];
+
+    // ===============================
+    // RELATIONSHIP
+    // ===============================
 
     public function user()
     {
@@ -15,7 +23,7 @@ class Post extends Model
 
     public function comments()
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Comment::class)->latest();
     }
 
     public function likes()
