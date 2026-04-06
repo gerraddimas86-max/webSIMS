@@ -3,6 +3,7 @@
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
+
 @theme {
     --font-sans: 'Inter', system-ui, sans-serif;
     

@@ -10,29 +10,24 @@ class Event extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title',
+        'name',
         'description',
-        'date',
-        'time',
-        'location',
-        'organizer_id',
-        'category',
-        'max_participants'
+        'event_date',
     ];
 
     protected $casts = [
-        'date' => 'datetime',
-        'time' => 'datetime'
+        'event_date' => 'date',
     ];
 
-    public function organizer()
+    public function registrations()
     {
-        return $this->belongsTo(User::class, 'organizer_id');
+        return $this->hasMany(EventRegistration::class);
     }
 
-    public function participants()
+    public function users()
     {
-        return $this->belongsToMany(User::class, 'event_participants')
+        return $this->belongsToMany(User::class, 'event_registrations')
+                    ->withPivot('attended')
                     ->withTimestamps();
     }
 }
