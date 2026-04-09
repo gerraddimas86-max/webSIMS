@@ -230,7 +230,7 @@
         <div class="flex items-center gap-2.5 pt-3 border-t border-white/7">
             <button type="button" 
                     onclick="toggleLike({{ $post->id }}, this)"
-                    class="like-btn inline-flex items-center gap-1.5 bg-none border border-white/7 rounded-full px-3.5 py-1 font-['DM_Sans'] text-[0.78rem] font-medium cursor-pointer hover:border-primary-400/35 hover:text-primary-400 hover:bg-primary-400/6 transition-all {{ $post->is_liked_by_user ? 'text-[#60a5fa] border-[#60a5fa]/35' : 'text-white/45' }}">
+                    class="like-btn inline-flex items-center gap-1.5 bg-none border border-white/7 rounded-full px-3.5 py-1 font-['DM_Sans'] text-[0.78rem] font-medium cursor-pointer hover:border-primary-400/35 hover:text-primary-400 hover:bg-primary-400/6 transition-all {{ $post->is_liked_by_user ? 'text-primary-400 border-primary-400/35' : 'text-white/45' }}">
                 <i class="{{ $post->is_liked_by_user ? 'fa-solid fa-thumbs-up' : 'fa-regular fa-thumbs-up' }} text-[11px]"></i>
                 <span class="like-count font-bold text-[#f0f4f8]">{{ $post->likes->count() }}</span>
             </button>
