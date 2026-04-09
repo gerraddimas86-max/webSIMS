@@ -5,7 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\EventRegistration;
+use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class AdminEventController extends Controller
 {
@@ -28,10 +32,26 @@ class AdminEventController extends Controller
             'event_date'  => 'required|date|after_or_equal:today',
         ]);
 
-        Event::create($request->only('name', 'description', 'event_date'));
+        $event = Event::create($request->only('name', 'description', 'event_date'));
+
+        // ==================== NOTIFIKASI EVENT BARU UNTUK SEMUA USER ====================
+        $users = User::where('role', 'user')->get();
+        
+        foreach ($users as $user) {
+            Notification::create([
+                'user_id' => $user->id,
+                'sender_id' => Auth::id(),
+                'type' => 'new_event',
+                'notifiable_type' => Event::class,
+                'notifiable_id' => $event->id,
+                'message' => 'Event baru: "' . $event->name . '" - ' . Carbon::parse($event->event_date)->translatedFormat('d F Y'),
+                'action_url' => route('events.show', $event->id),
+                'is_read' => false,
+            ]);
+        }
 
         return redirect()->route('admin.events.index')
-            ->with('success', 'Event berhasil dibuat!');
+            ->with('success', 'Event berhasil dibuat! Notifikasi telah dikirim ke semua user.');
     }
 
     public function edit(Event $event)
@@ -62,9 +82,9 @@ class AdminEventController extends Controller
 
     public function participants(Event $event)
     {
-        $registrations = EventRegistration::with('user')
-            ->where('event_id', $event->id)
-            ->latest()
+        // Ambil semua data registrasi dengan relasi user (opsional)
+        $registrations = EventRegistration::where('event_id', $event->id)
+            ->latest('registration_date')
             ->paginate(20);
 
         return view('admin.events.participants', compact('event', 'registrations'));

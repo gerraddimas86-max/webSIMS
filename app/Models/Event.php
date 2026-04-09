@@ -1,4 +1,5 @@
 <?php
+// app/Models/Event.php
 
 namespace App\Models;
 
@@ -29,5 +30,10 @@ class Event extends Model
         return $this->belongsToMany(User::class, 'event_registrations')
                     ->withPivot('attended')
                     ->withTimestamps();
+    }
+    
+    public function getRegistrationsCountAttribute()
+    {
+        return $this->registrations()->count();
     }
 }

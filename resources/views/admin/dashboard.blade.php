@@ -1,265 +1,298 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Komunitas Pelajar</title>
+    <title>Admin Dashboard - Community SIMS</title>
     @vite('resources/css/app.css')
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Mulish:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --sidebar-w: 240px;
-            --bg: #f5f4f1;
-            --surface: #ffffff;
-            --dark: #141414;
-            --mid: #6b6b6b;
-            --light: #e8e6e0;
+        /* Animations only - Tailwind doesn't have these */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-        body { font-family: 'Mulish', sans-serif; background: var(--bg); color: var(--dark); display: flex; min-height: 100vh; }
-
-        /* SIDEBAR */
-        .sidebar { width: var(--sidebar-w); background: var(--dark); min-height: 100vh; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; }
-        .sidebar-brand { padding: 1.75rem 1.5rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,.06); }
-        .brand-label { font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-bottom: .35rem; }
-        .brand-name { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
-        .sidebar-nav { padding: 1.25rem .75rem; flex: 1; display: flex; flex-direction: column; gap: .2rem; }
-        .nav-section-label { font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.22); padding: .75rem .75rem .3rem; margin-top: .5rem; }
-        .nav-item { display: flex; align-items: center; gap: .75rem; padding: .65rem .85rem; border-radius: .6rem; color: rgba(255,255,255,.5); text-decoration: none; font-size: .875rem; font-weight: 500; transition: background .15s, color .15s; }
-        .nav-item:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.9); }
-        .nav-item.active { background: rgba(255,255,255,.12); color: #fff; }
-        .sidebar-footer { padding: 1rem .75rem 1.5rem; border-top: 1px solid rgba(255,255,255,.06); }
-        .admin-chip { display: flex; align-items: center; gap: .65rem; padding: .65rem .85rem; border-radius: .6rem; background: rgba(255,255,255,.06); }
-        .admin-avatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.15); display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700; color: #fff; flex-shrink: 0; }
-        .admin-info { flex: 1; min-width: 0; }
-        .admin-name { font-size: .8rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .admin-role { font-size: .68rem; color: rgba(255,255,255,.35); }
-        .logout-btn { background: none; border: none; cursor: pointer; color: rgba(255,255,255,.3); padding: .2rem; transition: color .15s; }
-        .logout-btn:hover { color: #ef4444; }
-
-        /* MAIN */
-        .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
-        .topbar { background: var(--surface); border-bottom: 1px solid var(--light); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
-        .topbar-title { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 600; }
-        .topbar-date { font-size: .78rem; color: var(--mid); }
-        .topbar-badge { background: var(--dark); color: #fff; font-size: .68rem; font-weight: 700; padding: .2rem .55rem; border-radius: 99px; letter-spacing: .04em; }
-        .page { padding: 2rem; flex: 1; }
-
-        /* PAGE HEADER */
-        .page-header { margin-bottom: 2rem; opacity: 0; animation: fadeUp .5s ease .05s forwards; }
-        .page-header h1 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: .25rem; }
-        .page-header p { font-size: .875rem; color: var(--mid); }
-
-        /* STAT CARDS */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 2rem; }
-        .stat-card { background: var(--surface); border: 1px solid var(--light); border-radius: 1rem; padding: 1.5rem; opacity: 0; animation: fadeUp .5s ease forwards; }
-        .stat-card:nth-child(1) { animation-delay: .1s; }
-        .stat-card:nth-child(2) { animation-delay: .18s; }
-        .stat-card:nth-child(3) { animation-delay: .26s; }
-        .stat-icon { width: 38px; height: 38px; border-radius: .65rem; background: var(--bg); display: flex; align-items: center; justify-content: center; margin-bottom: 1.1rem; }
-        .stat-value { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 700; line-height: 1; margin-bottom: .3rem; }
-        .stat-label { font-size: .75rem; font-weight: 600; color: var(--mid); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .5rem; }
-        .stat-sub { font-size: .75rem; color: var(--mid); }
-
-        /* QUICK ACTIONS */
-        .actions-section { opacity: 0; animation: fadeUp .5s ease .35s forwards; margin-bottom: 2rem; }
-        .section-title { font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 600; margin-bottom: 1rem; }
-        .actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-        .action-card { background: var(--surface); border: 1px solid var(--light); border-radius: 1rem; padding: 1.25rem 1.5rem; text-decoration: none; color: var(--dark); display: flex; align-items: center; gap: 1rem; transition: border-color .15s, transform .15s, box-shadow .15s; }
-        .action-card:hover { border-color: var(--dark); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.08); }
-        .action-icon { width: 42px; height: 42px; border-radius: .75rem; background: var(--bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .action-text strong { display: block; font-size: .9rem; font-weight: 600; margin-bottom: .15rem; }
-        .action-text span { font-size: .78rem; color: var(--mid); }
-
-        /* RECENT EVENTS TABLE */
-        .table-section { background: var(--surface); border: 1px solid var(--light); border-radius: 1rem; overflow: hidden; opacity: 0; animation: fadeUp .5s ease .45s forwards; }
-        .table-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--light); display: flex; align-items: center; justify-content: space-between; }
-        .table-header-title { font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 600; }
-        .table-link { font-size: .78rem; color: var(--mid); text-decoration: none; transition: color .15s; }
-        .table-link:hover { color: var(--dark); }
-        table { width: 100%; border-collapse: collapse; }
-        th { padding: .75rem 1.5rem; text-align: left; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--mid); border-bottom: 1px solid var(--light); background: var(--bg); }
-        td { padding: .9rem 1.5rem; font-size: .85rem; border-bottom: 1px solid var(--light); }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: #fafaf9; }
-        .badge { display: inline-flex; align-items: center; padding: .2rem .65rem; border-radius: 99px; font-size: .72rem; font-weight: 600; }
-        .badge-upcoming { background: #eff6ff; color: #2563eb; }
-        .badge-past { background: #f3f4f6; color: #6b7280; }
-        .btn-sm { display: inline-flex; align-items: center; gap: .35rem; padding: .35rem .85rem; border-radius: .5rem; font-size: .78rem; font-weight: 600; text-decoration: none; transition: background .15s; }
-        .btn-dark { background: var(--dark); color: #fff; }
-        .btn-dark:hover { background: #333; }
-        .btn-outline { background: transparent; border: 1px solid var(--light); color: var(--dark); }
-        .btn-outline:hover { background: var(--bg); }
-
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .animate-fadeUp {
+            animation: fadeUp 0.5s ease forwards;
+        }
+        
+        /* Sidebar fixed positioning */
+        .sidebar-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 100vh;
+            z-index: 100;
+        }
+        
+        /* Main content margin */
+        .main-content {
+            margin-left: 240px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar-fixed {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+        
+        /* Table styles */
+        .admin-table th {
+            padding: 0.7rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            background: #0d1117;
+        }
+        
+        .admin-table td {
+            padding: 0.875rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        
+        .admin-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .admin-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
     </style>
 </head>
-<body>
+<body class="font-['DM_Sans'] bg-[#080c12] text-[#f0f4f8] flex min-h-screen">
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-    <div class="sidebar-brand">
-        <div class="brand-label">Panel Kontrol</div>
-        <div class="brand-name">Komunitas Pelajar</div>
+{{-- ── Sidebar ──────────────────────────────────────────────── --}}
+<aside class="sidebar-fixed w-60 bg-[#0d1117] border-r border-white/7 flex flex-col">
+    {{-- Sidebar glow --}}
+    <div class="absolute -top-16 -left-16 w-64 h-64 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.08)_0%,transparent_70%)] pointer-events-none"></div>
+    
+    <div class="px-5 pt-6 pb-4.5 border-b border-white/7 relative">
+        <div class="flex items-center gap-1.5 text-[0.62rem] tracking-[0.14em] uppercase text-white/22 mb-1.5">
+            <i class="fa-solid fa-circle text-[5px] text-primary-400"></i>
+            <span>Panel Kontrol</span>
+        </div>
+        <div class="font-['DM_Sans'] text-[0.95rem] font-bold text-[#f0f4f8] tracking-wide">Community SIMS</div>
     </div>
-    <nav class="sidebar-nav">
-        <div class="nav-section-label">Menu</div>
-        <a href="{{ route('admin.dashboard') }}" class="nav-item active">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+
+    <nav class="flex-1 px-2.5 py-4 flex flex-col gap-0.5">
+        <div class="text-[0.6rem] tracking-[0.12em] uppercase text-white/22 px-3 pt-2.5 pb-1">Menu</div>
+
+        <a href="{{ route('admin.dashboard') }}"
+           class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/45 text-[0.85rem] font-medium border border-transparent hover:bg-white/5 hover:text-[#f0f4f8] transition-all duration-150 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-500/10 border-blue-500/18 text-primary-400' : '' }}">
+            <i class="fa-solid fa-chart-simple w-3.5 h-3.5 text-[13px]"></i>
             Dashboard
+            @if(request()->routeIs('admin.dashboard'))
+                <i class="fa-solid fa-circle text-[5px] text-primary-400 ml-auto"></i>
+            @endif
         </a>
-        <a href="{{ route('admin.events.index') }}" class="nav-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+
+        <a href="{{ route('admin.events.index') }}"
+           class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/45 text-[0.85rem] font-medium border border-transparent hover:bg-white/5 hover:text-[#f0f4f8] transition-all duration-150 {{ request()->routeIs('admin.events.index') ? 'bg-blue-500/10 border-blue-500/18 text-primary-400' : '' }}">
+            <i class="fa-solid fa-calendar-alt w-3.5 h-3.5 text-[13px]"></i>
             Kelola Event
+            @if(request()->routeIs('admin.events.index'))
+                <i class="fa-solid fa-circle text-[5px] text-primary-400 ml-auto"></i>
+            @endif
         </a>
-        <a href="{{ route('admin.events.create') }}" class="nav-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+
+        <a href="{{ route('admin.events.create') }}"
+           class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/45 text-[0.85rem] font-medium border border-transparent hover:bg-white/5 hover:text-[#f0f4f8] transition-all duration-150 {{ request()->routeIs('admin.events.create') ? 'bg-blue-500/10 border-blue-500/18 text-primary-400' : '' }}">
+            <i class="fa-solid fa-plus-circle w-3.5 h-3.5 text-[13px]"></i>
             Buat Event
+            @if(request()->routeIs('admin.events.create'))
+                <i class="fa-solid fa-circle text-[5px] text-primary-400 ml-auto"></i>
+            @endif
         </a>
     </nav>
-    <div class="sidebar-footer">
-        <div class="admin-chip">
-            <div class="admin-avatar">{{ substr(Auth::user()->name, 0, 1) }}</div>
-            <div class="admin-info">
-                <div class="admin-name">{{ Auth::user()->name }}</div>
-                <div class="admin-role">Administrator</div>
+
+    <div class="px-2.5 py-3.5 pb-5 border-t border-white/7">
+        <div class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-[#1c2333] border border-white/7">
+            <div class="w-7.5 h-7.5 rounded-lg bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-[0.72rem] font-bold text-primary-400 shrink-0">
+                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="text-[0.78rem] font-semibold text-[#f0f4f8] truncate">{{ Auth::user()->name }}</div>
+                <div class="text-[0.65rem] text-white/22">Administrator</div>
             </div>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="logout-btn" title="Logout">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <button type="submit" class="bg-none border-none cursor-pointer text-white/22 hover:text-[#f87171] transition-colors p-1">
+                    <i class="fa-solid fa-sign-out-alt text-[13px]"></i>
                 </button>
             </form>
         </div>
     </div>
 </aside>
 
-<!-- MAIN -->
-<div class="main">
-    <div class="topbar">
-        <span class="topbar-title">Dashboard</span>
-        <div style="display:flex;align-items:center;gap:1rem;">
-            <span class="topbar-date">{{ now()->translatedFormat('l, d F Y') }}</span>
-            <span class="topbar-badge">ADMIN</span>
+{{-- ── Main ─────────────────────────────────────────────────── --}}
+<div class="main-content flex-1 flex flex-col">
+
+    {{-- Topbar --}}
+    <div class="sticky top-0 z-50 bg-[#0d1117]/85 backdrop-blur-xl border-b border-white/7 px-8 py-3.5 flex items-center justify-between">
+        <div class="absolute -bottom-px left-[10%] right-[10%] h-px bg-linear-to-r from-transparent via-blue-500/25 to-transparent"></div>
+        <span class="font-['DM_Sans'] text-base font-semibold text-[#f0f4f8]">Dashboard</span>
+        <div class="flex items-center gap-3.5">
+            <span class="text-[0.75rem] text-white/22">{{ now()->translatedFormat('l, d F Y') }}</span>
+            <span class="bg-blue-500/12 border border-blue-500/20 text-primary-400 text-[0.65rem] font-bold px-2.5 py-0.5 rounded-full tracking-wide">ADMIN</span>
         </div>
     </div>
 
-    <div class="page">
+    <div class="flex-1 p-8">
 
-        <div class="page-header">
-            <h1>Selamat datang, {{ Auth::user()->name }} 👋</h1>
-            <p>Kelola event dan pantau pendaftaran komunitas dari sini.</p>
+        {{-- Page header --}}
+        <div class="mb-8 animate-fadeUp opacity-0" style="animation-delay: 0.05s">
+            <h1 class="font-['DM_Serif_Display'] text-[1.65rem] text-[#f0f4f8] mb-1">Selamat datang, {{ Auth::user()->name }} 👋</h1>
+            <p class="text-[0.875rem] text-white/45">Kelola event dan pantau pendaftaran komunitas dari sini.</p>
         </div>
 
-        <!-- STAT CARDS -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        {{-- Stat cards --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-7">
+            {{-- Total Events --}}
+            <div class="bg-[#161b24] border border-white/7 rounded-2xl p-5 relative overflow-hidden hover:border-white/13 hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)] transition-all animate-fadeUp opacity-0" style="animation-delay: 0.1s">
+                <div class="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-[radial-gradient(circle,rgba(251,191,36,0.08)_0%,transparent_70%)] pointer-events-none"></div>
+                <div class="w-9 h-9 rounded-lg bg-[#fbbf24]/10 border border-[#fbbf24]/18 flex items-center justify-center mb-4">
+                    <i class="fa-solid fa-calendar-alt text-[#fbbf24] text-sm"></i>
                 </div>
-                <div class="stat-value">{{ number_format($totalEvents) }}</div>
-                <div class="stat-label">Total Event</div>
-                <div class="stat-sub">{{ $upcomingEvents }} akan datang</div>
+                <div class="font-['DM_Serif_Display'] text-[2.1rem] text-[#f0f4f8] leading-none mb-1">{{ number_format($totalEvents) }}</div>
+                <div class="text-[0.68rem] font-bold text-white/22 uppercase tracking-widest mb-1.5">Total Event</div>
+                <div class="text-[0.75rem] text-white/45">{{ $upcomingEvents }} akan datang</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                </div>
-                <div class="stat-value">{{ number_format($totalUsers) }}</div>
-                <div class="stat-label">Total User</div>
-                <div class="stat-sub">+{{ $newUsersThisMonth }} bulan ini</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                </div>
-                <div class="stat-value">{{ number_format($totalRegistrations) }}</div>
-                <div class="stat-label">Total Pendaftar</div>
-                <div class="stat-sub">Dari semua event</div>
-            </div>
-        </div>
 
-        <!-- QUICK ACTIONS -->
-        <div class="actions-section">
-            <div class="section-title">Aksi Cepat</div>
-            <div class="actions-grid">
-                <a href="{{ route('admin.events.create') }}" class="action-card">
-                    <div class="action-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                    </div>
-                    <div class="action-text">
-                        <strong>Buat Event Baru</strong>
-                        <span>Tambahkan event untuk komunitas</span>
-                    </div>
-                </a>
-                <a href="{{ route('admin.events.index') }}" class="action-card">
-                    <div class="action-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    </div>
-                    <div class="action-text">
-                        <strong>Lihat Semua Event</strong>
-                        <span>Kelola & pantau event aktif</span>
-                    </div>
-                </a>
-                <a href="{{ route('admin.events.index') }}#registrations" class="action-card">
-                    <div class="action-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                    </div>
-                    <div class="action-text">
-                        <strong>Data Peserta</strong>
-                        <span>Lihat pendaftar per event</span>
-                    </div>
-                </a>
+            {{-- Total Users --}}
+            <div class="bg-[#161b24] border border-white/7 rounded-2xl p-5 relative overflow-hidden hover:border-white/13 hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)] transition-all animate-fadeUp opacity-0" style="animation-delay: 0.17s">
+                <div class="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.08)_0%,transparent_70%)] pointer-events-none"></div>
+                <div class="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/18 flex items-center justify-center mb-4">
+                    <i class="fa-solid fa-users text-primary-400 text-sm"></i>
+                </div>
+                <div class="font-['DM_Serif_Display'] text-[2.1rem] text-[#f0f4f8] leading-none mb-1">{{ number_format($totalUsers) }}</div>
+                <div class="text-[0.68rem] font-bold text-white/22 uppercase tracking-widest mb-1.5">Total User</div>
+                <div class="text-[0.75rem] text-white/45">+{{ $newUsersThisMonth }} bulan ini</div>
+            </div>
+
+            {{-- Total Registrations --}}
+            <div class="bg-[#161b24] border border-white/7 rounded-2xl p-5 relative overflow-hidden hover:border-white/13 hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)] transition-all animate-fadeUp opacity-0" style="animation-delay: 0.24s">
+                <div class="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-[radial-gradient(circle,rgba(74,222,128,0.08)_0%,transparent_70%)] pointer-events-none"></div>
+                <div class="w-9 h-9 rounded-lg bg-[#4ade80]/10 border border-[#4ade80]/18 flex items-center justify-center mb-4">
+                    <i class="fa-solid fa-user-check text-[#4ade80] text-sm"></i>
+                </div>
+                <div class="font-['DM_Serif_Display'] text-[2.1rem] text-[#f0f4f8] leading-none mb-1">{{ number_format($totalRegistrations) }}</div>
+                <div class="text-[0.68rem] font-bold text-white/22 uppercase tracking-widest mb-1.5">Total Pendaftar</div>
+                <div class="text-[0.75rem] text-white/45">Dari semua event</div>
             </div>
         </div>
 
-        <!-- RECENT EVENTS TABLE -->
-        <div class="table-section">
-            <div class="table-header">
-                <span class="table-header-title">Event Terbaru</span>
-                <a href="{{ route('admin.events.index') }}" class="table-link">Lihat semua →</a>
+        {{-- Quick actions --}}
+        <div class="mb-7 animate-fadeUp opacity-0" style="animation-delay: 0.32s">
+            <div class="flex items-center gap-2 mb-3.5">
+                <div class="text-[0.68rem] font-bold tracking-widest uppercase text-white/22 flex items-center gap-2">
+                    <i class="fa-solid fa-bolt text-[10px]"></i>
+                    Aksi Cepat
+                </div>
+                <div class="flex-1 h-px bg-white/7"></div>
             </div>
-            <table>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                <a href="{{ route('admin.events.create') }}" class="bg-[#161b24] border border-white/7 rounded-2xl p-5 flex items-center gap-3.5 no-underline text-[#f0f4f8] hover:border-white/13 hover:bg-[#1c2333] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,0,0,0.3)] transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-[#1c2333] flex items-center justify-center shrink-0 hover:bg-[#242d3d] transition-all">
+                        <i class="fa-solid fa-plus-circle text-[#fbbf24] text-lg"></i>
+                    </div>
+                    <div>
+                        <strong class="block text-[0.85rem] font-semibold text-[#f0f4f8] mb-0.5">Buat Event Baru</strong>
+                        <span class="text-[0.75rem] text-white/45">Tambahkan event untuk komunitas</span>
+                    </div>
+                </a>
+
+                <a href="{{ route('admin.events.index') }}" class="bg-[#161b24] border border-white/7 rounded-2xl p-5 flex items-center gap-3.5 no-underline text-[#f0f4f8] hover:border-white/13 hover:bg-[#1c2333] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,0,0,0.3)] transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-[#1c2333] flex items-center justify-center shrink-0 hover:bg-[#242d3d] transition-all">
+                        <i class="fa-solid fa-calendar-alt text-primary-400 text-lg"></i>
+                    </div>
+                    <div>
+                        <strong class="block text-[0.85rem] font-semibold text-[#f0f4f8] mb-0.5">Lihat Semua Event</strong>
+                        <span class="text-[0.75rem] text-white/45">Kelola & pantau event aktif</span>
+                    </div>
+                </a>
+
+                <a href="{{ route('admin.events.index') }}#registrations" class="bg-[#161b24] border border-white/7 rounded-2xl p-5 flex items-center gap-3.5 no-underline text-[#f0f4f8] hover:border-white/13 hover:bg-[#1c2333] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,0,0,0.3)] transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-[#1c2333] flex items-center justify-center shrink-0 hover:bg-[#242d3d] transition-all">
+                        <i class="fa-solid fa-users text-[#4ade80] text-lg"></i>
+                    </div>
+                    <div>
+                        <strong class="block text-[0.85rem] font-semibold text-[#f0f4f8] mb-0.5">Data Peserta</strong>
+                        <span class="text-[0.75rem] text-white/45">Lihat pendaftar per event</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        {{-- Recent events table --}}
+        <div class="bg-[#161b24] border border-white/7 rounded-2xl overflow-hidden animate-fadeUp opacity-0" style="animation-delay: 0.42s">
+            <div class="px-6 py-4.5 border-b border-white/7 flex items-center justify-between">
+                <span class="text-[0.85rem] font-semibold text-[#f0f4f8]">Event Terbaru</span>
+                <a href="{{ route('admin.events.index') }}" class="text-[0.75rem] text-primary-400 no-underline hover:text-[#f0f4f8] transition-colors">Lihat semua →</a>
+            </div>
+            
+            <table class="admin-table w-full border-collapse">
                 <thead>
                     <tr>
-                        <th>Nama Event</th>
-                        <th>Tanggal</th>
-                        <th>Pendaftar</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
+                        <th class="text-[0.65rem] font-bold uppercase tracking-widest text-white/22">Nama Event</th>
+                        <th class="text-[0.65rem] font-bold uppercase tracking-widest text-white/22">Tanggal</th>
+                        <th class="text-[0.65rem] font-bold uppercase tracking-widest text-white/22">Pendaftar</th>
+                        <th class="text-[0.65rem] font-bold uppercase tracking-widest text-white/22">Status</th>
+                        <th class="text-[0.65rem] font-bold uppercase tracking-widest text-white/22">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($recentEvents as $event)
-                    <tr>
-                        <td style="font-weight:600;">{{ $event->name }}</td>
-                        <td style="color:var(--mid);">{{ \Carbon\Carbon::parse($event->event_date)->format('d M Y') }}</td>
-                        <td>{{ $event->registrations_count ?? 0 }} orang</td>
+                    <tr class="hover:bg-white/2">
+                        <td class="font-semibold text-[#f0f4f8]">{{ $event->name }}</td>
+                        <td class="text-white/45">{{ \Carbon\Carbon::parse($event->event_date)->format('d M Y') }}</td>
+                        <td class="text-white/45">{{ $event->registrations_count ?? 0 }} orang</td>
                         <td>
                             @if(\Carbon\Carbon::parse($event->event_date)->isFuture())
-                                <span class="badge badge-upcoming">Akan Datang</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[0.68rem] font-semibold bg-blue-500/10 border border-blue-500/20 text-primary-400">
+                                    <i class="fa-regular fa-clock mr-1 text-[9px]"></i>
+                                    Akan Datang
+                                </span>
                             @else
-                                <span class="badge badge-past">Selesai</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[0.68rem] font-semibold bg-white/5 border border-white/7 text-white/22">
+                                    <i class="fa-regular fa-check-circle mr-1 text-[9px]"></i>
+                                    Selesai
+                                </span>
                             @endif
                         </td>
                         <td>
-                            <div style="display:flex;gap:.5rem;">
-                                <a href="{{ route('admin.events.participants', $event->id) }}" class="btn-sm btn-dark">Peserta</a>
-                                <a href="{{ route('admin.events.edit', $event->id) }}" class="btn-sm btn-outline">Edit</a>
+                            <div class="flex gap-1.5">
+                                <a href="{{ route('admin.events.participants', $event->id) }}" class="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-[0.75rem] font-semibold no-underline bg-primary-600 text-white hover:bg-primary-500 transition-all">
+                                    <i class="fa-solid fa-users text-[10px]"></i>
+                                    Peserta
+                                </a>
+                                <a href="{{ route('admin.events.edit', $event->id) }}" class="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-[0.75rem] font-semibold no-underline bg-transparent border border-white/13 text-white/45 hover:bg-[#1c2333] hover:text-[#f0f4f8] hover:border-white/13 transition-all">
+                                    <i class="fa-regular fa-pen-to-square text-[10px]"></i>
+                                    Edit
+                                </a>
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" style="text-align:center;color:var(--mid);padding:2rem;">Belum ada event.</td>
+                        <td colspan="5" class="text-center text-white/22 py-10">
+                            <i class="fa-regular fa-calendar-xmark text-2xl mb-2 block"></i>
+                            Belum ada event.
+                        </td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
 
-    </div>
-</div>
+    </div>{{-- end .page --}}
+</div>{{-- end .main --}}
 
 </body>
 </html>

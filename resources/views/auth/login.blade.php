@@ -64,7 +64,7 @@
             <div class="absolute -bottom-20 -right-20 w-80 h-80 rounded-full border border-blue-400/10"></div>
             <div class="absolute -bottom-10 -right-10 w-48 h-48 rounded-full border border-blue-400/5"></div>
 
-            <div class="absolute top-10 right-10 w-28 h-28 bg-[radial-gradient(circle,_rgba(96,165,250,0.18)_1px,_transparent_1px)] bg-[length:12px_12px]"></div>
+            <div class="absolute top-10 right-10 w-28 h-28 bg-[radial-gradient(circle,rgba(96,165,250,0.18)_1px,transparent_1px)] bg-size-[12px_12px]"></div>
 
             <div class="relative z-10">
                 <div class="flex items-center gap-2 mb-6">
@@ -110,7 +110,7 @@
         <div class="flex-1 flex flex-col justify-center px-12 py-12 bg-[#161b24] relative overflow-hidden">
 
             <div class="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-blue-500/10 blur-3xl"></div>
-            <div class="absolute left-0 top-1/5 h-3/5 w-[2px] bg-gradient-to-b from-transparent via-blue-500/40 to-transparent"></div>
+            <div class="absolute left-0 top-1/5 h-3/5 w-0.5 bg-linear-to-b from-transparent via-blue-500/40 to-transparent"></div>
 
             <div class="relative z-10">
                 <h2 class="font-serif text-2xl text-white mb-1">Masuk ke Akun</h2>

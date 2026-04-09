@@ -38,7 +38,7 @@
             <div class="relative">
                 <!-- Teks utama dengan weight super bold -->
                 <p class="text-3xl md:text-5xl lg:text-6xl font-black leading-tight md:leading-[1.3] tracking-wide">
-                    <span class="bg-gradient-to-r from-white via-blue-100 to-blue-300 bg-clip-text text-transparent drop-shadow-2xl">
+                    <span class="bg-linear-to-r from-white via-blue-100 to-blue-300 bg-clip-text text-transparent drop-shadow-2xl">
                         Solidarity and Innovation<br>
                         Movement of Sriwijaya
                     </span>
@@ -50,7 +50,7 @@
                 </p>
                 
                 <!-- Elegant Underline yang lebih tebal -->
-                <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-transparent via-blue-400/70 to-transparent animate-[underlineGrow_1s_ease-out_2.5s_forwards]"></div>
+                <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-linear-to-r from-transparent via-blue-400/70 to-transparent animate-[underlineGrow_1s_ease-out_2.5s_forwards]"></div>
             </div>
             
             <!-- Closing Quote Icon -->

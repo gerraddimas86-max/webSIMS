@@ -31,15 +31,15 @@
 </style>
 
 {{-- Loading overlay --}}
-<div id="epOverlay" class="fixed inset-0 bg-[#080c12]/65 backdrop-blur-md z-[9999] flex flex-col items-center justify-center gap-3.5 opacity-0 invisible transition-opacity duration-250">
-    <div class="w-9 h-9 border-[2.5px] border-white/12 border-t-[#60a5fa] rounded-full animate-spin-custom"></div>
+<div id="epOverlay" class="fixed inset-0 bg-[#080c12]/65 backdrop-blur-md z-9999 flex flex-col items-center justify-center gap-3.5 opacity-0 invisible transition-opacity duration-250">
+    <div class="w-9 h-9 border-[2.5px] border-white/12 border-t-primary-400 rounded-full animate-spin-custom"></div>
     <div id="epOverlayText" class="font-['DM_Sans'] text-[0.875rem] font-medium text-white/45">Menyimpan perubahan…</div>
 </div>
 
 {{-- Toast --}}
-<div id="epToast" class="fixed bottom-7 left-1/2 -translate-x-1/2 translate-y-2.5 bg-[#1c2333] border border-white/13 text-[#f0f4f8] font-['DM_Sans'] text-[0.82rem] font-medium py-2 px-5 rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.4)] opacity-0 pointer-events-none transition-all duration-250 z-[10000] whitespace-nowrap"></div>
+<div id="epToast" class="fixed bottom-7 left-1/2 -translate-x-1/2 translate-y-2.5 bg-[#1c2333] border border-white/13 text-[#f0f4f8] font-['DM_Sans'] text-[0.82rem] font-medium py-2 px-5 rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.4)] opacity-0 pointer-events-none transition-all duration-250 z-10000 whitespace-nowrap"></div>
 
-<div class="w-full max-w-[640px] mx-auto pb-16 font-['DM_Sans'] text-[#f0f4f8]">
+<div class="w-full max-w-160 mx-auto pb-16 font-['DM_Sans'] text-[#f0f4f8]">
 
     {{-- Top bar --}}
     <div class="flex items-center justify-between mb-5">
@@ -53,12 +53,12 @@
     {{-- Header card --}}
     <div class="relative rounded-2xl overflow-hidden mb-1 shadow-[0_4px_24px_rgba(0,0,0,0.35)] animate-fadeUp">
         <img src="{{ asset('images/unsri_bg.jpg') }}" alt="" class="absolute inset-0 w-full h-full object-cover brightness-[0.3] saturate-[0.6]">
-        <div class="absolute inset-0 bg-gradient-to-br from-[#080c12]/88 to-[#161b24]/72"></div>
+        <div class="absolute inset-0 bg-linear-to-br from-[#080c12]/88 to-[#161b24]/72"></div>
         <div class="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.12)_0%,transparent_70%)] pointer-events-none"></div>
         
         <div class="relative z-10 p-5 flex items-center gap-3.5">
-            <div class="w-10.5 h-10.5 rounded-[0.625rem] bg-blue-500/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
-                <i class="fa-regular fa-pen-to-square text-[#60a5fa] text-base"></i>
+            <div class="w-10.5 h-10.5 rounded-[0.625rem] bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
+                <i class="fa-regular fa-pen-to-square text-primary-400 text-base"></i>
             </div>
             <div>
                 <div class="font-['DM_Serif_Display'] text-[1.35rem] text-[#f0f4f8] mb-0.5 leading-tight">Edit Postingan</div>
@@ -80,8 +80,8 @@
     {{-- Edit card --}}
     <div class="bg-[#161b24] border border-white/7 rounded-2xl p-5 animate-fadeUp-delay">
         <div class="flex items-center gap-2 mb-4">
-            <div class="w-1.5 h-1.5 rounded-full bg-[#60a5fa]"></div>
-            <span class="text-[0.68rem] font-bold tracking-[0.1em] uppercase text-white/22">
+            <div class="w-1.5 h-1.5 rounded-full bg-primary-400"></div>
+            <span class="text-[0.68rem] font-bold tracking-widest uppercase text-white/22">
                 <i class="fa-regular fa-pen-to-square mr-1.5 text-[10px]"></i>
                 Edit Post
             </span>
@@ -107,11 +107,11 @@
             {{-- Title --}}
             <div class="mb-3.5">
                 <div class="flex items-center justify-between mb-1.5">
-                    <span class="text-[0.7rem] font-bold tracking-[0.1em] uppercase text-white/22">Judul</span>
+                    <span class="text-[0.7rem] font-bold tracking-widest uppercase text-white/22">Judul</span>
                     <span id="epTitleCount" class="text-[0.7rem] text-white/22 font-mono tabular-nums transition-colors duration-150">{{ strlen(old('title', $post->title)) }} / 150</span>
                 </div>
                 <input type="text" name="title" id="epTitle"
-                       class="w-full bg-[#1c2333] border border-white/7 rounded-xl px-4 py-2.5 font-['DM_Sans'] text-[0.875rem] text-[#f0f4f8] placeholder-white/20 outline-none focus:border-[#3b82f6] focus:bg-[#242d3d] focus:ring-2 focus:ring-blue-500/10 transition-all"
+                       class="w-full bg-[#1c2333] border border-white/7 rounded-xl px-4 py-2.5 font-['DM_Sans'] text-[0.875rem] text-[#f0f4f8] placeholder-white/20 outline-none focus:border-primary-500 focus:bg-[#242d3d] focus:ring-2 focus:ring-blue-500/10 transition-all"
                        placeholder="Tulis judul yang menarik…"
                        value="{{ old('title', $post->title) }}"
                        maxlength="150" autocomplete="off" required>
@@ -122,11 +122,11 @@
             {{-- Content --}}
             <div class="mb-0">
                 <div class="flex items-center justify-between mb-1.5">
-                    <span class="text-[0.7rem] font-bold tracking-[0.1em] uppercase text-white/22">Isi Postingan</span>
+                    <span class="text-[0.7rem] font-bold tracking-widest uppercase text-white/22">Isi Postingan</span>
                     <span id="epContentCount" class="text-[0.7rem] text-white/22 font-mono tabular-nums transition-colors duration-150">{{ strlen(old('content', $post->content)) }} / 2000</span>
                 </div>
                 <textarea name="content" id="epContent"
-                          class="w-full bg-[#1c2333] border border-white/7 rounded-xl px-4 py-2.5 font-['DM_Sans'] text-[0.875rem] text-[#f0f4f8] placeholder-white/20 outline-none focus:border-[#3b82f6] focus:bg-[#242d3d] focus:ring-2 focus:ring-blue-500/10 transition-all resize-none ep-textarea-auto"
+                          class="w-full bg-[#1c2333] border border-white/7 rounded-xl px-4 py-2.5 font-['DM_Sans'] text-[0.875rem] text-[#f0f4f8] placeholder-white/20 outline-none focus:border-primary-500 focus:bg-[#242d3d] focus:ring-2 focus:ring-blue-500/10 transition-all resize-none ep-textarea-auto"
                           placeholder="Bagikan sesuatu kepada komunitas…"
                           maxlength="2000" required>{{ old('content', $post->content) }}</textarea>
             </div>
@@ -134,10 +134,10 @@
             {{-- Actions --}}
             <div class="flex gap-2 pt-4 mt-4 border-t border-white/7 sm:flex-row flex-col">
                 <a href="{{ route('posts.index') }}" class="inline-flex items-center justify-center gap-1.5 font-['DM_Sans'] text-[0.85rem] font-semibold py-2.5 px-5 rounded-xl border border-white/7 bg-[#1c2333] text-white/45 no-underline hover:bg-[#242d3d] hover:text-[#f0f4f8] hover:border-white/13 hover:-translate-y-px transition-all duration-200 sm:w-auto w-full">
-                    <i class="fa-regular fa-xmark text-[11px]"></i>
+                    <i class="fa-regular fa-circle-xmark mr-1"></i>
                     Batal
                 </a>
-                <button type="submit" id="epSubmit" class="flex-1 flex items-center justify-center gap-1.5 font-['DM_Sans'] text-[0.85rem] font-semibold py-2.5 px-5 rounded-xl bg-[#2563eb] text-white border-none cursor-pointer tracking-wide hover:bg-[#3b82f6] hover:-translate-y-px hover:shadow-[0_6px_16px_rgba(59,130,246,0.3)] active:translate-y-0 transition-all relative overflow-hidden group">
+                <button type="submit" id="epSubmit" class="flex-1 flex items-center justify-center gap-1.5 font-['DM_Sans'] text-[0.85rem] font-semibold py-2.5 px-5 rounded-xl bg-primary-600 text-white border-none cursor-pointer tracking-wide hover:bg-primary-500 hover:-translate-y-px hover:shadow-[0_6px_16px_rgba(59,130,246,0.3)] active:translate-y-0 transition-all relative overflow-hidden group">
                     <i class="fa-regular fa-floppy-disk text-[11px] group-hover:rotate-12 transition-transform"></i>
                     Simpan Perubahan
                 </button>
@@ -155,7 +155,7 @@
         <div class="flex-1 h-px bg-white/7"></div>
     </div>
 
-    <div class="bg-[#f87171]/5 border border-[#f87171]/15 rounded-2xl p-5 flex items-center justify-between gap-4 animate-fadeUp-late sm:flex-row flex-col sm:items-center items-start">
+    <div class="bg-[#f87171]/5 border border-[#f87171]/15 rounded-2xl p-5 flex justify-between gap-4 animate-fadeUp-late sm:flex-row flex-col sm:items-center items-start">
         <div>
             <div class="text-[0.85rem] font-bold text-[#f87171] mb-0.5">Hapus Postingan</div>
             <div class="text-[0.72rem] text-white/22 leading-relaxed">Tindakan ini permanen dan tidak dapat dibatalkan</div>
@@ -163,7 +163,7 @@
         <form id="epDeleteForm" action="{{ route('posts.destroy', $post->id) }}" method="POST">
             @csrf
             @method('DELETE')
-            <button type="button" id="epDeleteBtn" onclick="epConfirmDelete()" class="inline-flex items-center gap-1.5 font-['DM_Sans'] text-[0.8rem] font-semibold py-2 px-4 rounded-full bg-[#f87171]/8 text-[#f87171] border border-[#f87171]/20 cursor-pointer hover:bg-[#f87171] hover:text-white hover:border-[#f87171] hover:shadow-[0_4px_14px_rgba(248,113,113,0.3)] hover:-translate-y-px active:translate-y-0 transition-all whitespace-nowrap flex-shrink-0">
+            <button type="button" id="epDeleteBtn" onclick="epConfirmDelete()" class="inline-flex items-center gap-1.5 font-['DM_Sans'] text-[0.8rem] font-semibold py-2 px-4 rounded-full bg-[#f87171]/8 text-[#f87171] border border-[#f87171]/20 cursor-pointer hover:bg-[#f87171] hover:text-white hover:border-[#f87171] hover:shadow-[0_4px_14px_rgba(248,113,113,0.3)] hover:-translate-y-px active:translate-y-0 transition-all whitespace-nowrap shrink-0">
                 <i class="fa-regular fa-trash-can text-[11px]"></i>
                 Hapus
             </button>

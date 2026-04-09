@@ -1,201 +1,290 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peserta Event - Admin</title>
+    <title>Peserta Event - Admin | Community SIMS</title>
     @vite('resources/css/app.css')
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Mulish:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root { --sidebar-w: 240px; --bg: #f5f4f1; --surface: #ffffff; --dark: #141414; --mid: #6b6b6b; --light: #e8e6e0; }
-        body { font-family: 'Mulish', sans-serif; background: var(--bg); color: var(--dark); display: flex; min-height: 100vh; }
-        .sidebar { width: var(--sidebar-w); background: var(--dark); min-height: 100vh; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; }
-        .sidebar-brand { padding: 1.75rem 1.5rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,.06); }
-        .brand-label { font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-bottom: .35rem; }
-        .brand-name { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
-        .sidebar-nav { padding: 1.25rem .75rem; flex: 1; display: flex; flex-direction: column; gap: .2rem; }
-        .nav-section-label { font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.22); padding: .75rem .75rem .3rem; margin-top: .5rem; }
-        .nav-item { display: flex; align-items: center; gap: .75rem; padding: .65rem .85rem; border-radius: .6rem; color: rgba(255,255,255,.5); text-decoration: none; font-size: .875rem; font-weight: 500; transition: background .15s, color .15s; }
-        .nav-item:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.9); }
-        .nav-item.active { background: rgba(255,255,255,.12); color: #fff; }
-        .sidebar-footer { padding: 1rem .75rem 1.5rem; border-top: 1px solid rgba(255,255,255,.06); }
-        .admin-chip { display: flex; align-items: center; gap: .65rem; padding: .65rem .85rem; border-radius: .6rem; background: rgba(255,255,255,.06); }
-        .admin-avatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.15); display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700; color: #fff; flex-shrink: 0; }
-        .admin-info { flex: 1; min-width: 0; }
-        .admin-name { font-size: .8rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .admin-role { font-size: .68rem; color: rgba(255,255,255,.35); }
-        .logout-btn { background: none; border: none; cursor: pointer; color: rgba(255,255,255,.3); padding: .2rem; transition: color .15s; }
-        .logout-btn:hover { color: #ef4444; }
-        .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
-        .topbar { background: var(--surface); border-bottom: 1px solid var(--light); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
-        .topbar-left { display: flex; align-items: center; gap: .75rem; }
-        .topbar-back { display: flex; align-items: center; gap: .4rem; font-size: .82rem; color: var(--mid); text-decoration: none; transition: color .15s; }
-        .topbar-back:hover { color: var(--dark); }
-        .topbar-title { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 600; }
-        .topbar-badge { background: var(--dark); color: #fff; font-size: .68rem; font-weight: 700; padding: .2rem .55rem; border-radius: 99px; }
-        .page { padding: 2rem; flex: 1; }
-
-        /* EVENT INFO CARD */
-        .event-info { background: var(--dark); color: #fff; border-radius: 1rem; padding: 1.5rem 2rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; opacity: 0; animation: fadeUp .5s ease .05s forwards; }
-        .event-info-left h2 { font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 700; margin-bottom: .35rem; }
-        .event-info-left p { font-size: .85rem; color: rgba(255,255,255,.55); }
-        .event-stats { display: flex; gap: 2rem; }
-        .event-stat { text-align: center; }
-        .event-stat-num { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; line-height: 1; }
-        .event-stat-label { font-size: .7rem; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .07em; margin-top: .25rem; }
-
-        /* TABLE */
-        .table-section { background: var(--surface); border: 1px solid var(--light); border-radius: 1rem; overflow: hidden; opacity: 0; animation: fadeUp .5s ease .15s forwards; }
-        .table-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--light); display: flex; align-items: center; justify-content: space-between; }
-        .table-header-title { font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 600; }
-        .search-input { padding: .5rem 1rem; background: var(--bg); border: 1.5px solid var(--light); border-radius: .65rem; font-family: 'Mulish', sans-serif; font-size: .85rem; outline: none; transition: border-color .2s; width: 220px; }
-        .search-input:focus { border-color: var(--dark); }
-        table { width: 100%; border-collapse: collapse; }
-        th { padding: .75rem 1.5rem; text-align: left; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--mid); border-bottom: 1px solid var(--light); background: var(--bg); }
-        td { padding: .9rem 1.5rem; font-size: .875rem; border-bottom: 1px solid var(--light); vertical-align: middle; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: #fafaf9; }
-        .user-cell { display: flex; align-items: center; gap: .75rem; }
-        .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--dark); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: 700; flex-shrink: 0; }
-        .user-name { font-weight: 600; font-size: .875rem; }
-        .user-email { font-size: .75rem; color: var(--mid); margin-top: .1rem; }
-        .badge { display: inline-flex; align-items: center; padding: .2rem .65rem; border-radius: 99px; font-size: .72rem; font-weight: 600; }
-        .badge-attended { background: #f0fdf4; color: #16a34a; }
-        .badge-registered { background: #eff6ff; color: #2563eb; }
-        .empty-state { text-align: center; padding: 4rem 2rem; color: var(--mid); }
-        .empty-state svg { margin: 0 auto 1rem; display: block; opacity: .3; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fadeUp {
+            animation: fadeUp 0.5s ease forwards;
+        }
+        
+        .sidebar-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 100vh;
+            z-index: 100;
+        }
+        
+        .main-content {
+            margin-left: 240px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar-fixed {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+        
+        .admin-table th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            background: #0d1117;
+        }
+        
+        .admin-table td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        
+        .admin-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .admin-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.25rem;
+        }
+        
+        .pagination a, .pagination span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 0.875rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .pagination a {
+            background: #1c2333;
+            border: 1px solid rgba(255,255,255,0.07);
+            color: rgba(255,255,255,0.45);
+        }
+        
+        .pagination a:hover {
+            background: #242d3d;
+            border-color: rgba(255,255,255,0.13);
+            color: #f0f4f8;
+        }
+        
+        .pagination .active span {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .pagination .disabled span {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
     </style>
 </head>
-<body>
+<body class="font-['DM_Sans'] bg-[#080c12] text-[#f0f4f8] flex min-h-screen">
 
-<aside class="sidebar">
-    <div class="sidebar-brand">
-        <div class="brand-label">Panel Kontrol</div>
-        <div class="brand-name">Komunitas Pelajar</div>
+{{-- ── Sidebar ──────────────────────────────────────────────── --}}
+<aside class="sidebar-fixed w-60 bg-[#0d1117] border-r border-white/7 flex flex-col">
+    <div class="absolute -top-16 -left-16 w-64 h-64 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.08)_0%,transparent_70%)] pointer-events-none"></div>
+    
+    <div class="px-5 pt-6 pb-4.5 border-b border-white/7 relative">
+        <div class="flex items-center gap-1.5 text-[0.62rem] tracking-[0.14em] uppercase text-white/22 mb-1.5">
+            <i class="fa-solid fa-circle text-[5px] text-primary-400"></i>
+            <span>Panel Kontrol</span>
+        </div>
+        <div class="font-['DM_Sans'] text-[0.95rem] font-bold text-[#f0f4f8] tracking-wide">Community SIMS</div>
     </div>
-    <nav class="sidebar-nav">
-        <div class="nav-section-label">Menu</div>
-        <a href="{{ route('admin.dashboard') }}" class="nav-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+
+    <nav class="flex-1 px-2.5 py-4 flex flex-col gap-0.5">
+        <div class="text-[0.6rem] tracking-[0.12em] uppercase text-white/22 px-3 pt-2.5 pb-1">Menu</div>
+
+        <a href="{{ route('admin.dashboard') }}"
+           class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/45 text-[0.85rem] font-medium border border-transparent hover:bg-white/5 hover:text-[#f0f4f8] transition-all duration-150">
+            <i class="fa-solid fa-chart-simple text-[13px]"></i>
             Dashboard
         </a>
-        <a href="{{ route('admin.events.index') }}" class="nav-item active">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+
+        <a href="{{ route('admin.events.index') }}"
+           class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/45 text-[0.85rem] font-medium border border-transparent hover:bg-white/5 hover:text-[#f0f4f8] transition-all duration-150">
+            <i class="fa-solid fa-calendar-alt text-[13px]"></i>
             Kelola Event
         </a>
-        <a href="{{ route('admin.events.create') }}" class="nav-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+
+        <a href="{{ route('admin.events.create') }}"
+           class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/45 text-[0.85rem] font-medium border border-transparent hover:bg-white/5 hover:text-[#f0f4f8] transition-all duration-150">
+            <i class="fa-solid fa-plus-circle text-[13px]"></i>
             Buat Event
         </a>
     </nav>
-    <div class="sidebar-footer">
-        <div class="admin-chip">
-            <div class="admin-avatar">{{ substr(Auth::user()->name, 0, 1) }}</div>
-            <div class="admin-info">
-                <div class="admin-name">{{ Auth::user()->name }}</div>
-                <div class="admin-role">Administrator</div>
+
+    <div class="px-2.5 py-3.5 pb-5 border-t border-white/7">
+        <div class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-[#1c2333] border border-white/7">
+            <div class="w-7.5 h-7.5 rounded-lg bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-[0.72rem] font-bold text-primary-400 shrink-0">
+                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="text-[0.78rem] font-semibold text-[#f0f4f8] truncate">{{ Auth::user()->name }}</div>
+                <div class="text-[0.65rem] text-white/22">Administrator</div>
             </div>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="logout-btn" title="Logout">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <button type="submit" class="bg-none border-none cursor-pointer text-white/22 hover:text-[#f87171] transition-colors p-1">
+                    <i class="fa-solid fa-sign-out-alt text-[13px]"></i>
                 </button>
             </form>
         </div>
     </div>
 </aside>
 
-<div class="main">
-    <div class="topbar">
-        <div class="topbar-left">
-            <a href="{{ route('admin.events.index') }}" class="topbar-back">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+{{-- ── Main ─────────────────────────────────────────────────── --}}
+<div class="main-content flex-1 flex flex-col">
+
+    {{-- Topbar --}}
+    <div class="sticky top-0 z-50 bg-[#0d1117]/85 backdrop-blur-xl border-b border-white/7 px-8 py-3.5 flex items-center justify-between">
+        <div class="absolute -bottom-px left-[10%] right-[10%] h-px bg-linear-to-r from-transparent via-blue-500/25 to-transparent"></div>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.events.index') }}" class="flex items-center gap-1.5 text-[0.82rem] text-white/45 no-underline hover:text-[#f0f4f8] transition-colors">
+                <i class="fa-solid fa-arrow-left text-[11px]"></i>
                 Semua Event
             </a>
-            <span style="color:var(--light)">/</span>
-            <span class="topbar-title">Peserta</span>
+            <span class="text-white/22">/</span>
+            <span class="font-['DM_Sans'] text-base font-semibold text-[#f0f4f8]">Peserta</span>
         </div>
-        <span class="topbar-badge">ADMIN</span>
+        <span class="bg-blue-500/12 border border-blue-500/20 text-primary-400 text-[0.65rem] font-bold px-2.5 py-0.5 rounded-full tracking-wide">ADMIN</span>
     </div>
 
-    <div class="page">
+    <div class="flex-1 p-8">
 
-        <!-- EVENT INFO -->
-        <div class="event-info">
-            <div class="event-info-left">
-                <h2>{{ $event->name }}</h2>
-                <p>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:.3rem;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    {{ \Carbon\Carbon::parse($event->event_date)->format('d F Y') }}
-                </p>
-            </div>
-            <div class="event-stats">
-                <div class="event-stat">
-                    <div class="event-stat-num">{{ $registrations->total() }}</div>
-                    <div class="event-stat-label">Pendaftar</div>
+        {{-- Event Info Card --}}
+        <div class="bg-[#0d1117] rounded-2xl p-6 mb-8 animate-fadeUp opacity-0" style="animation-delay: 0.05s">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="font-['DM_Serif_Display'] text-[1.25rem] text-[#f0f4f8] mb-1">{{ $event->name }}</h2>
+                    <p class="text-[0.85rem] text-white/45 flex items-center gap-1.5">
+                        <i class="fa-regular fa-calendar-alt text-[11px]"></i>
+                        {{ \Carbon\Carbon::parse($event->event_date)->translatedFormat('l, d F Y') }}
+                    </p>
+                    <p class="text-[0.8rem] text-white/30 mt-2 line-clamp-2">{{ Str::limit($event->description, 100) }}</p>
                 </div>
-                <div class="event-stat">
-                    <div class="event-stat-num">{{ $registrations->where('attended', true)->count() }}</div>
-                    <div class="event-stat-label">Hadir</div>
+                <div class="flex gap-6">
+                    <div class="text-center">
+                        <div class="font-['DM_Serif_Display'] text-[1.6rem] font-bold text-[#f0f4f8] leading-none">{{ $registrations->total() }}</div>
+                        <div class="text-[0.7rem] text-white/30 uppercase tracking-wide mt-1">Pendaftar</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-['DM_Serif_Display'] text-[1.6rem] font-bold text-[#f0f4f8] leading-none">{{ $registrations->where('attended', true)->count() }}</div>
+                        <div class="text-[0.7rem] text-white/30 uppercase tracking-wide mt-1">Hadir</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- PARTICIPANTS TABLE -->
-        <div class="table-section">
-            <div class="table-header">
-                <span class="table-header-title">Daftar Peserta</span>
-                <input type="text" class="search-input" placeholder="Cari nama peserta..." id="searchInput" oninput="filterTable()">
+        {{-- Participants Table --}}
+        <div class="bg-[#161b24] border border-white/7 rounded-2xl overflow-hidden animate-fadeUp opacity-0" style="animation-delay: 0.1s">
+            <div class="px-6 py-4 border-b border-white/7 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <span class="font-['DM_Sans'] text-[0.85rem] font-semibold text-[#f0f4f8]">
+                    <i class="fa-solid fa-users-list text-[12px] mr-2 text-white/45"></i>
+                    Daftar Peserta
+                </span>
+                <div class="relative">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-white/22 text-[12px]"></i>
+                    <input type="text" id="searchInput" oninput="filterTable()" 
+                           placeholder="Cari nama, email, telepon, atau fakultas..." 
+                           class="pl-9 pr-4 py-2 bg-[#1c2333] border border-white/7 rounded-xl text-[0.85rem] text-[#f0f4f8] placeholder-white/22 outline-none focus:border-primary-500 focus:ring-2 focus:ring-blue-500/10 transition-all w-full sm:w-80">
+                </div>
             </div>
-            <table id="participantsTable">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Peserta</th>
-                        <th>Tanggal Daftar</th>
-                        <th>Status Kehadiran</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($registrations as $reg)
-                    <tr>
-                        <td style="color:var(--mid);font-size:.8rem;">{{ $loop->iteration }}</td>
-                        <td>
-                            <div class="user-cell">
-                                <div class="user-avatar">{{ substr($reg->user->name ?? 'U', 0, 1) }}</div>
-                                <div>
-                                    <div class="user-name">{{ $reg->user->name ?? 'Unknown' }}</div>
-                                    <div class="user-email">{{ $reg->user->email ?? '-' }}</div>
+            
+            <div class="overflow-x-auto">
+                <table class="admin-table w-full border-collapse">
+                    <thead>
+                        <tr>
+                            <th class="text-[0.72rem] font-bold uppercase tracking-[0.07em] text-white/30">#</th>
+                            <th class="text-[0.72rem] font-bold uppercase tracking-[0.07em] text-white/30">Nama Lengkap</th>
+                            <th class="text-[0.72rem] font-bold uppercase tracking-[0.07em] text-white/30">Email</th>
+                            <th class="text-[0.72rem] font-bold uppercase tracking-[0.07em] text-white/30">No. Telepon</th>
+                            <th class="text-[0.72rem] font-bold uppercase tracking-[0.07em] text-white/30">Fakultas</th>
+                            <th class="text-[0.72rem] font-bold uppercase tracking-[0.07em] text-white/30">Tanggal Daftar</th>
+                            <th class="text-[0.72rem] font-bold uppercase tracking-[0.07em] text-white/30">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="participantsTableBody">
+                        @forelse($registrations as $index => $reg)
+                        <tr class="hover:bg-white/2 transition-colors">
+                            <td class="text-white/45 text-[0.8rem]">{{ $registrations->firstItem() + $index }}</td>
+                            <td>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-[0.75rem] font-bold text-primary-400 shrink-0">
+                                        {{ strtoupper(substr($reg->full_name ?? $reg->user->name ?? 'U', 0, 1)) }}
+                                    </div>
+                                    <div class="text-[0.875rem] font-semibold text-[#f0f4f8]">{{ $reg->full_name ?? $reg->user->name }}</div>
                                 </div>
-                            </div>
-                        </td>
-                        <td style="color:var(--mid);">{{ $reg->created_at->format('d M Y, H:i') }}</td>
-                        <td>
-                            @if($reg->attended)
-                                <span class="badge badge-attended">✓ Hadir</span>
-                            @else
-                                <span class="badge badge-registered">Terdaftar</span>
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="4">
-                            <div class="empty-state">
-                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                                <p>Belum ada peserta yang mendaftar.</p>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                            </td>
+                            <td class="text-white/45 text-[0.85rem]">{{ $reg->email ?? $reg->user->email ?? '-' }}</td>
+                            <td class="text-white/45 text-[0.85rem]">{{ $reg->phone ?? '-' }}</td>
+                            <td class="text-white/45 text-[0.85rem]">{{ $reg->faculty ?? '-' }}</td>
+                            <td class="text-white/45 text-[0.85rem]">{{ \Carbon\Carbon::parse($reg->registration_date ?? $reg->created_at)->translatedFormat('d M Y, H:i') }}</td>
+                            <td>
+                                @if($reg->attended)
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.72rem] font-semibold bg-[#4ade80]/10 border border-[#4ade80]/20 text-[#4ade80]">
+                                        <i class="fa-solid fa-check-circle text-[9px]"></i>
+                                        Hadir
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.72rem] font-semibold bg-blue-500/10 border border-blue-500/20 text-primary-400">
+                                        <i class="fa-regular fa-clock text-[9px]"></i>
+                                        Terdaftar
+                                    </span>
+                                @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7" class="text-center py-16">
+                                <div class="flex flex-col items-center gap-3">
+                                    <i class="fa-regular fa-user text-4xl text-white/22"></i>
+                                    <p class="text-white/45 text-[0.875rem]">Belum ada peserta yang mendaftar.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
 
+        {{-- Pagination --}}
         @if($registrations->hasPages())
-        <div style="margin-top:1.25rem;">{{ $registrations->links() }}</div>
+            <div class="mt-5">
+                {{ $registrations->links('pagination::tailwind') }}
+            </div>
         @endif
 
     </div>
@@ -204,13 +293,35 @@
 <script>
 function filterTable() {
     const input = document.getElementById('searchInput').value.toLowerCase();
-    const rows = document.querySelectorAll('#participantsTable tbody tr');
+    const rows = document.querySelectorAll('#participantsTableBody tr');
+    
     rows.forEach(row => {
-        const name = row.querySelector('.user-name')?.textContent.toLowerCase() ?? '';
-        const email = row.querySelector('.user-email')?.textContent.toLowerCase() ?? '';
-        row.style.display = (name.includes(input) || email.includes(input)) ? '' : 'none';
+        // Skip jika row kosong atau tidak memiliki cells
+        if (!row.cells || row.cells.length === 0) return;
+        
+        // Ambil teks dari kolom yang ingin dicari
+        const name = row.cells[1]?.textContent.toLowerCase() ?? '';
+        const email = row.cells[2]?.textContent.toLowerCase() ?? '';
+        const phone = row.cells[3]?.textContent.toLowerCase() ?? '';
+        const institution = row.cells[4]?.textContent.toLowerCase() ?? '';
+        
+        // Cek apakah kata kunci cocok dengan salah satu kolom
+        const matches = name.includes(input) || 
+                       email.includes(input) || 
+                       phone.includes(input) || 
+                       institution.includes(input);
+        
+        // Tampilkan atau sembunyikan row
+        row.style.display = matches ? '' : 'none';
     });
 }
+
+// Optional: Reset filter function
+function resetFilter() {
+    document.getElementById('searchInput').value = '';
+    filterTable();
+}
 </script>
+
 </body>
 </html>
