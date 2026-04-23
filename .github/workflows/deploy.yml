@@ -1,0 +1,35 @@
+name: 🚀 Deploy to InfinityFree
+
+on:
+  push:
+    branches: [ master ]  # Ganti 'main' jadi 'master' jika branch kamu 'master'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📤 FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_TARGET_FOLDER }}
+          exclude: |
+            .git/
+            .github/
+            .env
+            node_modules/
+            storage/logs/*.log
+            tests/
+            .gitignore
+            composer.json
+            package*.json
+            phpunit.xml
+            README.md
+            vite.config.js
+            resources/
+            database/
