@@ -2,14 +2,14 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Kelola Event - Admin | Community SIMS</title>
     @vite('resources/css/app.css')
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-        /* Animations only - Tailwind doesn't have these */
+        /* Styles sama seperti sebelumnya (tidak berubah) */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(16px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -28,58 +28,142 @@
             animation: modalFadeIn 0.3s ease forwards;
         }
         
-        /* Sidebar fixed positioning */
         .sidebar-fixed {
             position: fixed;
             top: 0;
             left: 0;
-            width: 240px;
+            width: 280px;
             height: 100vh;
             z-index: 100;
+            transition: transform 0.3s ease-in-out;
         }
         
-        /* Main content margin */
         .main-content {
-            margin-left: 240px;
+            margin-left: 280px;
+            transition: margin-left 0.3s ease-in-out;
         }
         
         @media (max-width: 768px) {
             .sidebar-fixed {
                 transform: translateX(-100%);
             }
+            .sidebar-fixed.mobile-open {
+                transform: translateX(0);
+            }
             .main-content {
                 margin-left: 0;
             }
+            .overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(8, 12, 18, 0.7);
+                backdrop-filter: blur(4px);
+                z-index: 99;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s ease, visibility 0.3s ease;
+            }
+            .overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
         }
         
-        /* Table styles */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .sidebar-fixed { width: 240px; }
+            .main-content { margin-left: 240px; }
+        }
+        
+        @media (max-width: 768px) {
+            .desktop-table { display: none; }
+            .mobile-cards { display: block; }
+            .event-card {
+                background: #161b24;
+                border: 1px solid rgba(255,255,255,0.07);
+                border-radius: 1rem;
+                padding: 1rem;
+                margin-bottom: 0.75rem;
+                transition: all 0.2s;
+            }
+            .event-card:hover {
+                border-color: rgba(255,255,255,0.13);
+                background: #1a1f2a;
+            }
+            .event-card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 0.75rem;
+            }
+            .event-card-title {
+                font-weight: 600;
+                color: #f0f4f8;
+                font-size: 1rem;
+                margin-bottom: 0.25rem;
+            }
+            .event-card-desc {
+                font-size: 0.7rem;
+                color: rgba(255,255,255,0.3);
+                margin-top: 0.25rem;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            .event-card-info {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1rem;
+                margin: 0.75rem 0;
+                padding: 0.5rem 0;
+                border-top: 1px solid rgba(255,255,255,0.07);
+                border-bottom: 1px solid rgba(255,255,255,0.07);
+            }
+            .event-card-info-item {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                font-size: 0.75rem;
+                color: rgba(255,255,255,0.45);
+            }
+            .event-card-actions {
+                display: flex;
+                gap: 0.5rem;
+                margin-top: 0.75rem;
+            }
+            .event-card-actions a,
+            .event-card-actions button {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .desktop-table { display: block; }
+            .mobile-cards { display: none; }
+        }
+        
+        .admin-table th, .admin-table td { padding: 0.7rem 1rem; }
+        @media (max-width: 640px) {
+            .admin-table th, .admin-table td { padding: 0.5rem 0.75rem; }
+        }
+        
         .admin-table th {
-            padding: 0.75rem 1.5rem;
             text-align: left;
             border-bottom: 1px solid rgba(255,255,255,0.07);
             background: #0d1117;
         }
         
-        .admin-table td {
-            padding: 0.9rem 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,0.07);
-            vertical-align: middle;
-        }
+        .admin-table td { border-bottom: 1px solid rgba(255,255,255,0.07); }
+        .admin-table tr:last-child td { border-bottom: none; }
+        .admin-table tr:hover td { background: rgba(255,255,255,0.02); }
         
-        .admin-table tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .admin-table tr:hover td {
-            background: rgba(255,255,255,0.02);
-        }
-        
-        /* Pagination styling */
         .pagination {
             display: flex;
             justify-content: center;
             gap: 0.5rem;
             margin-top: 1.25rem;
+            flex-wrap: wrap;
         }
         
         .pagination a, .pagination span {
@@ -111,15 +195,19 @@
             color: white;
         }
         
-        .pagination .disabled span {
-            opacity: 0.3;
-            cursor: not-allowed;
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
     </style>
 </head>
-<body class="font-['DM_Sans'] bg-[#080c12] text-[#f0f4f8] flex min-h-screen">
+<body class="font-['DM_Sans'] bg-[#080c12] text-[#f0f4f8] min-h-screen">
 
-{{-- ── Modal Konfirmasi Hapus Event ─────────────────────────────────────── --}}
+<div id="mobileOverlay" class="overlay"></div>
+
+{{-- Modal Konfirmasi Hapus Event --}}
 <div id="deleteModal" class="fixed inset-0 bg-[#080c12]/80 backdrop-blur-md z-50 flex items-center justify-center opacity-0 invisible transition-all duration-300">
     <div class="bg-[#161b24] border border-white/7 rounded-2xl max-w-md w-[90%] p-6 animate-modalIn">
         <div class="text-center">
@@ -143,10 +231,14 @@
     </div>
 </div>
 
-{{-- ── Sidebar ──────────────────────────────────────────────── --}}
-<aside class="sidebar-fixed w-60 bg-[#0d1117] border-r border-white/7 flex flex-col">
-    {{-- Sidebar glow --}}
+{{-- Sidebar --}}
+<aside id="adminSidebar" class="sidebar-fixed w-60 bg-[#0d1117] border-r border-white/7 flex flex-col">
     <div class="absolute -top-16 -left-16 w-64 h-64 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.08)_0%,transparent_70%)] pointer-events-none"></div>
+    
+    {{-- TOMBOL X SAMA PERSIS DENGAN DASHBOARD --}}
+    <button id="closeSidebarBtn" class="md:hidden absolute right-3 top-3 text-white/45 hover:text-white transition-colors p-2 z-10">
+        <i class="fa-solid fa-xmark text-xl"></i>
+    </button>
     
     <div class="px-5 pt-6 pb-4.5 border-b border-white/7 relative">
         <div class="flex items-center gap-1.5 text-[0.62rem] tracking-[0.14em] uppercase text-white/22 mb-1.5">
@@ -159,8 +251,7 @@
     <nav class="flex-1 px-2.5 py-4 flex flex-col gap-0.5">
         <div class="text-[0.6rem] tracking-[0.12em] uppercase text-white/22 px-3 pt-2.5 pb-1">Menu</div>
 
-        <a href="{{ route('admin.dashboard') }}" 
-           class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/45 text-[0.85rem] font-medium border border-transparent hover:bg-white/5 hover:text-[#f0f4f8] transition-all duration-150 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-500/10 border-blue-500/18 text-primary-400' : '' }}">
+        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/45 text-[0.85rem] font-medium border border-transparent hover:bg-white/5 hover:text-[#f0f4f8] transition-all duration-150 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-500/10 border-blue-500/18 text-primary-400' : '' }}">
             <i class="fa-solid fa-chart-simple text-[13px]"></i>
             Dashboard
             @if(request()->routeIs('admin.dashboard'))
@@ -168,8 +259,7 @@
             @endif
         </a>
 
-        <a href="{{ route('admin.events.index') }}" 
-           class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/45 text-[0.85rem] font-medium border border-transparent hover:bg-white/5 hover:text-[#f0f4f8] transition-all duration-150 {{ request()->routeIs('admin.events.index') ? 'bg-blue-500/10 border-blue-500/18 text-primary-400' : '' }}">
+        <a href="{{ route('admin.events.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/45 text-[0.85rem] font-medium border border-transparent hover:bg-white/5 hover:text-[#f0f4f8] transition-all duration-150 {{ request()->routeIs('admin.events.index') ? 'bg-blue-500/10 border-blue-500/18 text-primary-400' : '' }}">
             <i class="fa-solid fa-calendar-alt text-[13px]"></i>
             Kelola Event
             @if(request()->routeIs('admin.events.index'))
@@ -177,8 +267,7 @@
             @endif
         </a>
 
-        <a href="{{ route('admin.events.create') }}" 
-           class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/45 text-[0.85rem] font-medium border border-transparent hover:bg-white/5 hover:text-[#f0f4f8] transition-all duration-150 {{ request()->routeIs('admin.events.create') ? 'bg-blue-500/10 border-blue-500/18 text-primary-400' : '' }}">
+        <a href="{{ route('admin.events.create') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-white/45 text-[0.85rem] font-medium border border-transparent hover:bg-white/5 hover:text-[#f0f4f8] transition-all duration-150 {{ request()->routeIs('admin.events.create') ? 'bg-blue-500/10 border-blue-500/18 text-primary-400' : '' }}">
             <i class="fa-solid fa-plus-circle text-[13px]"></i>
             Buat Event
             @if(request()->routeIs('admin.events.create'))
@@ -206,90 +295,96 @@
     </div>
 </aside>
 
-{{-- ── Main ─────────────────────────────────────────────────── --}}
+{{-- Main Content --}}
 <div class="main-content flex-1 flex flex-col">
 
-    {{-- Topbar --}}
-    <div class="sticky top-0 z-50 bg-[#0d1117]/85 backdrop-blur-xl border-b border-white/7 px-8 py-3.5 flex items-center justify-between">
+    <div class="sticky top-0 z-50 bg-[#0d1117]/85 backdrop-blur-xl border-b border-white/7 px-4 sm:px-8 py-3.5 flex items-center justify-between">
         <div class="absolute -bottom-px left-[10%] right-[10%] h-px bg-linear-to-r from-transparent via-blue-500/25 to-transparent"></div>
-        <span class="font-['DM_Sans'] text-base font-semibold text-[#f0f4f8]">Kelola Event</span>
-        <span class="bg-blue-500/12 border border-blue-500/20 text-primary-400 text-[0.65rem] font-bold px-2.5 py-0.5 rounded-full tracking-wide">ADMIN</span>
+        
+        <div class="flex items-center gap-3">
+            <button id="hamburgerBtn" class="md:hidden flex flex-col justify-center items-center w-9 h-9 rounded-lg border border-white/7 bg-transparent cursor-pointer gap-1.25 hover:bg-white/5 hover:border-white/12 transition-all duration-200">
+                <span class="block w-4.5 h-[1.5px] bg-white/45 rounded-full"></span>
+                <span class="block w-4.5 h-[1.5px] bg-white/45 rounded-full"></span>
+                <span class="block w-4.5 h-[1.5px] bg-white/45 rounded-full"></span>
+            </button>
+            <span class="font-['DM_Sans'] text-base font-semibold text-[#f0f4f8]">Kelola Event</span>
+        </div>
+        
+        <span class="bg-blue-500/12 border border-blue-500/20 text-primary-400 text-[0.65rem] font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap">ADMIN</span>
     </div>
 
-    <div class="flex-1 p-8">
+    <div class="flex-1 p-4 sm:p-6 md:p-8">
 
-        {{-- Page Header --}}
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 animate-fadeUp opacity-0" style="animation-delay: 0.05s">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 animate-fadeUp opacity-0" style="animation-delay: 0.05s">
             <div>
-                <h1 class="font-['DM_Serif_Display'] text-[1.6rem] text-[#f0f4f8] mb-1">Daftar Event</h1>
-                <p class="text-[0.875rem] text-white/45">{{ $events->total() }} event terdaftar di sistem</p>
+                <h1 class="font-['DM_Serif_Display'] text-[1.3rem] sm:text-[1.6rem] text-[#f0f4f8] mb-1">Daftar Event</h1>
+                <p class="text-[0.8rem] sm:text-[0.875rem] text-white/45">{{ $events->total() }} event terdaftar di sistem</p>
             </div>
-            <a href="{{ route('admin.events.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl font-['DM_Sans'] text-[0.875rem] font-semibold no-underline hover:bg-primary-500 hover:-translate-y-px transition-all duration-200 shadow-lg shadow-blue-500/20">
+            <a href="{{ route('admin.events.create') }}" class="inline-flex items-center gap-2 px-4 sm:px-5 py-2 bg-primary-600 text-white rounded-xl text-[0.8rem] sm:text-[0.875rem] font-semibold no-underline hover:bg-primary-500 hover:-translate-y-px transition-all shadow-lg shadow-blue-500/20 w-full sm:w-auto justify-center">
                 <i class="fa-solid fa-plus text-[12px]"></i>
                 Buat Event
             </a>
         </div>
 
-        {{-- Success Message --}}
         @if(session('success'))
-            <div class="mb-5 bg-[#4ade80]/10 border border-[#4ade80]/20 rounded-xl px-5 py-3.5 text-[0.875rem] text-[#4ade80] flex items-center gap-2 animate-fadeUp opacity-0" style="animation-delay: 0.08s">
+            <div class="mb-5 bg-[#4ade80]/10 border border-[#4ade80]/20 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-[0.8rem] sm:text-[0.875rem] text-[#4ade80] flex items-center gap-2 animate-fadeUp opacity-0" style="animation-delay: 0.08s">
                 <i class="fa-solid fa-circle-check text-[14px]"></i>
-                {{ session('success') }}
+                <span class="wrap-break-word">{{ session('success') }}</span>
             </div>
         @endif
 
-        {{-- Events Table --}}
-        <div class="bg-[#161b24] border border-white/7 rounded-2xl overflow-hidden animate-fadeUp opacity-0" style="animation-delay: 0.1s">
+        {{-- TABEL DESKTOP --}}
+        <div class="desktop-table bg-[#161b24] border border-white/7 rounded-2xl overflow-hidden animate-fadeUp opacity-0" style="animation-delay: 0.1s">
             <div class="overflow-x-auto">
-                <table class="admin-table w-full border-collapse">
+                <table class="admin-table w-full border-collapse min-w-150">
                     <thead>
                         <tr>
-                            <th class="text-[0.72rem] font-bold uppercase tracking-[0.07em] text-white/30">#</th>
-                            <th class="text-[0.72rem] font-bold uppercase tracking-[0.07em] text-white/30">Nama Event</th>
-                            <th class="text-[0.72rem] font-bold uppercase tracking-[0.07em] text-white/30">Tanggal</th>
-                            <th class="text-[0.72rem] font-bold uppercase tracking-[0.07em] text-white/30">Pendaftar</th>
-                            <th class="text-[0.72rem] font-bold uppercase tracking-[0.07em] text-white/30">Status</th>
-                            <th class="text-[0.72rem] font-bold uppercase tracking-[0.07em] text-white/30">Aksi</th>
+                            <th class="px-3 sm:px-6 py-2 sm:py-3 text-[0.7rem] sm:text-[0.72rem] font-bold uppercase tracking-wide text-white/30">#</th>
+                            <th class="px-3 sm:px-6 py-2 sm:py-3 text-[0.7rem] sm:text-[0.72rem] font-bold uppercase tracking-wide text-white/30">Nama Event</th>
+                            <th class="px-3 sm:px-6 py-2 sm:py-3 text-[0.7rem] sm:text-[0.72rem] font-bold uppercase tracking-wide text-white/30">Tanggal</th>
+                            <th class="px-3 sm:px-6 py-2 sm:py-3 text-[0.7rem] sm:text-[0.72rem] font-bold uppercase tracking-wide text-white/30">Pendaftar</th>
+                            <th class="px-3 sm:px-6 py-2 sm:py-3 text-[0.7rem] sm:text-[0.72rem] font-bold uppercase tracking-wide text-white/30">Status</th>
+                            <th class="px-3 sm:px-6 py-2 sm:py-3 text-[0.7rem] sm:text-[0.72rem] font-bold uppercase tracking-wide text-white/30">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($events as $event)
-                        <tr class="hover:bg-white/2 transition-colors">
-                            <td class="text-white/45 text-[0.8rem]">{{ $loop->iteration }}</td>
-                            <td>
-                                <div class="font-semibold text-[#f0f4f8]">{{ $event->name }}</div>
-                                <div class="text-[0.78rem] text-white/45 mt-0.5">{{ Str::limit($event->description, 50) }}</div>
+                        <tr class="hover:bg-white/2">
+                            <td class="px-3 sm:px-6 py-2 sm:py-3 text-white/45 text-[0.75rem] sm:text-[0.8rem]">{{ $loop->iteration }}</td>
+                            <td class="px-3 sm:px-6 py-2 sm:py-3">
+                                <div class="font-semibold text-[#f0f4f8] text-sm sm:text-base">{{ $event->name }}</div>
+                                <div class="text-[0.7rem] sm:text-[0.78rem] text-white/45 mt-0.5 line-clamp-2">{{ Str::limit($event->description, 50) }}</div>
                             </td>
-                            <td class="text-white/45">{{ \Carbon\Carbon::parse($event->event_date)->translatedFormat('d M Y') }}</td>
-                            <td>
-                                <span class="font-semibold text-[#f0f4f8]">{{ $event->registrations_count ?? 0 }}</span>
-                                <span class="text-white/45 text-[0.8rem]"> orang</span>
+                            <td class="px-3 sm:px-6 py-2 sm:py-3 text-white/45 text-xs sm:text-sm whitespace-nowrap">{{ \Carbon\Carbon::parse($event->event_date)->translatedFormat('d M Y') }}</td>
+                            <td class="px-3 sm:px-6 py-2 sm:py-3">
+                                <span class="font-semibold text-[#f0f4f8] text-sm sm:text-base">{{ $event->registrations_count ?? 0 }}</span>
+                                <span class="text-white/45 text-[0.7rem] sm:text-[0.8rem]"> org</span>
                             </td>
-                            <td>
+                            <td class="px-3 sm:px-6 py-2 sm:py-3">
                                 @if(\Carbon\Carbon::parse($event->event_date)->isFuture())
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.72rem] font-semibold bg-blue-500/10 border border-blue-500/20 text-primary-400">
-                                        <i class="fa-regular fa-clock text-[9px]"></i>
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.65rem] sm:text-[0.72rem] font-semibold bg-blue-500/10 border border-blue-500/20 text-primary-400 whitespace-nowrap">
+                                        <i class="fa-regular fa-clock text-[8px] sm:text-[9px]"></i>
                                         Akan Datang
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.72rem] font-semibold bg-white/5 border border-white/7 text-white/45">
-                                        <i class="fa-regular fa-circle-check text-[9px]"></i>
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.65rem] sm:text-[0.72rem] font-semibold bg-white/5 border border-white/7 text-white/45 whitespace-nowrap">
+                                        <i class="fa-regular fa-circle-check text-[8px] sm:text-[9px]"></i>
                                         Selesai
                                     </span>
                                 @endif
                             </td>
-                            <td>
-                                <div class="flex gap-2 flex-wrap">
-                                    <a href="{{ route('admin.events.participants', $event->id) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.75rem] font-semibold no-underline bg-primary-600 text-white hover:bg-primary-500 transition-all">
-                                        <i class="fa-solid fa-users text-[10px]"></i>
+                            <td class="px-3 sm:px-6 py-2 sm:py-3">
+                                <div class="flex gap-1.5 flex-wrap">
+                                    <a href="{{ route('admin.events.participants', $event->id) }}" class="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-lg text-[0.7rem] sm:text-[0.75rem] font-semibold bg-primary-600 text-white hover:bg-primary-500 transition-all whitespace-nowrap">
+                                        <i class="fa-solid fa-users text-[9px] sm:text-[10px]"></i>
                                         Peserta
                                     </a>
-                                    <a href="{{ route('admin.events.edit', $event->id) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.75rem] font-semibold no-underline bg-transparent border border-white/13 text-white/45 hover:bg-[#1c2333] hover:text-[#f0f4f8] hover:border-white/13 transition-all">
-                                        <i class="fa-regular fa-pen-to-square text-[10px]"></i>
+                                    <a href="{{ route('admin.events.edit', $event->id) }}" class="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-lg text-[0.7rem] sm:text-[0.75rem] font-semibold bg-transparent border border-white/13 text-white/45 hover:bg-[#1c2333] hover:text-[#f0f4f8] transition-all whitespace-nowrap">
+                                        <i class="fa-regular fa-pen-to-square text-[9px] sm:text-[10px]"></i>
                                         Edit
                                     </a>
-                                    <button type="button" onclick="showDeleteModal({{ $event->id }}, '{{ addslashes($event->name) }}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.75rem] font-semibold no-underline bg-[#f87171]/10 border border-[#f87171]/20 text-[#f87171] hover:bg-[#f87171] hover:text-white hover:border-[#f87171] transition-all cursor-pointer">
-                                        <i class="fa-regular fa-trash-can text-[10px]"></i>
+                                    <button onclick="showDeleteModal({{ $event->id }}, '{{ addslashes($event->name) }}')" class="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-lg text-[0.7rem] sm:text-[0.75rem] font-semibold bg-[#f87171]/10 border border-[#f87171]/20 text-[#f87171] hover:bg-[#f87171] hover:text-white transition-all cursor-pointer whitespace-nowrap">
+                                        <i class="fa-regular fa-trash-can text-[9px] sm:text-[10px]"></i>
                                         Hapus
                                     </button>
                                 </div>
@@ -297,16 +392,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="text-center py-16">
-                                <div class="flex flex-col items-center gap-3">
-                                    <i class="fa-regular fa-calendar-xmark text-4xl text-white/22"></i>
-                                    <p class="text-white/45 text-[0.875rem]">Belum ada event yang dibuat.</p>
-                                    <a href="{{ route('admin.events.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl font-['DM_Sans'] text-[0.875rem] font-semibold no-underline hover:bg-primary-500 hover:-translate-y-px transition-all duration-200">
-                                        <i class="fa-solid fa-plus text-[12px]"></i>
-                                        Buat Event Pertama
-                                    </a>
-                                </div>
-                            </td>
+                            <td colspan="6" class="text-center py-12 sm:py-16 text-white/45">Belum ada event yang dibuat.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -314,9 +400,74 @@
             </div>
         </div>
 
-        {{-- Pagination --}}
+        {{-- MOBILE CARD LAYOUT --}}
+        <div class="mobile-cards animate-fadeUp opacity-0" style="animation-delay: 0.1s">
+            @forelse($events as $event)
+            <div class="event-card">
+                <div class="event-card-header">
+                    <div>
+                        <div class="event-card-title">{{ $event->name }}</div>
+                        <div class="event-card-desc">{{ Str::limit($event->description, 70) }}</div>
+                    </div>
+                    @if(\Carbon\Carbon::parse($event->event_date)->isFuture())
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.65rem] font-semibold bg-blue-500/10 border border-blue-500/20 text-primary-400 whitespace-nowrap">
+                            <i class="fa-regular fa-clock text-[8px]"></i>
+                            Akan Datang
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.65rem] font-semibold bg-white/5 border border-white/7 text-white/45 whitespace-nowrap">
+                            <i class="fa-regular fa-circle-check text-[8px]"></i>
+                            Selesai
+                        </span>
+                    @endif
+                </div>
+                
+                <div class="event-card-info">
+                    <div class="event-card-info-item">
+                        <i class="fa-regular fa-calendar-alt text-[11px]"></i>
+                        {{ \Carbon\Carbon::parse($event->event_date)->translatedFormat('d M Y') }}
+                    </div>
+                    <div class="event-card-info-item">
+                        <i class="fa-solid fa-users text-[11px]"></i>
+                        {{ $event->registrations_count ?? 0 }} pendaftar
+                    </div>
+                    <div class="event-card-info-item">
+                        <i class="fa-regular fa-hashtag text-[11px]"></i>
+                        ID: {{ $event->id }}
+                    </div>
+                </div>
+                
+                <div class="event-card-actions">
+                    <a href="{{ route('admin.events.participants', $event->id) }}" class="inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-[0.7rem] font-semibold bg-primary-600 text-white hover:bg-primary-500 transition-all">
+                        <i class="fa-solid fa-users text-[9px]"></i>
+                        Peserta
+                    </a>
+                    <a href="{{ route('admin.events.edit', $event->id) }}" class="inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-[0.7rem] font-semibold bg-transparent border border-white/13 text-white/45 hover:bg-[#1c2333] hover:text-[#f0f4f8] transition-all">
+                        <i class="fa-regular fa-pen-to-square text-[9px]"></i>
+                        Edit
+                    </a>
+                    <button onclick="showDeleteModal({{ $event->id }}, '{{ addslashes($event->name) }}')" class="inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-[0.7rem] font-semibold bg-[#f87171]/10 border border-[#f87171]/20 text-[#f87171] hover:bg-[#f87171] hover:text-white transition-all cursor-pointer">
+                        <i class="fa-regular fa-trash-can text-[9px]"></i>
+                        Hapus
+                    </button>
+                </div>
+            </div>
+            @empty
+            <div class="text-center py-12">
+                <div class="flex flex-col items-center gap-3">
+                    <i class="fa-regular fa-calendar-xmark text-3xl text-white/22"></i>
+                    <p class="text-white/45 text-sm">Belum ada event yang dibuat.</p>
+                    <a href="{{ route('admin.events.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-semibold no-underline hover:bg-primary-500 transition-all">
+                        <i class="fa-solid fa-plus text-[12px]"></i>
+                        Buat Event Pertama
+                    </a>
+                </div>
+            </div>
+            @endforelse
+        </div>
+
         @if($events->hasPages())
-            <div class="mt-5">
+            <div class="mt-5 overflow-x-auto">
                 {{ $events->links('pagination::tailwind') }}
             </div>
         @endif
@@ -325,28 +476,48 @@
 </div>
 
 <script>
-    // Variabel untuk menyimpan data event yang akan dihapus
+    // Mobile sidebar toggle
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sidebar = document.getElementById('adminSidebar');
+    const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+    const overlay = document.getElementById('mobileOverlay');
+    
+    function openSidebar() {
+        sidebar.classList.add('mobile-open');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeSidebar() {
+        sidebar.classList.remove('mobile-open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    if (hamburgerBtn) hamburgerBtn.addEventListener('click', openSidebar);
+    if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
+    if (overlay) overlay.addEventListener('click', closeSidebar);
+    
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) closeSidebar();
+    });
+    
+    // Delete modal
     let deleteEventId = null;
     let deleteForm = null;
     
-    function showDeleteModal(eventId, eventName) {
+    window.showDeleteModal = function(eventId, eventName) {
         deleteEventId = eventId;
-        
-        // Update nama event di modal
         document.getElementById('deleteEventName').innerHTML = '<strong class="text-[#f0f4f8]">"' + eventName + '"</strong>';
-        
-        // Buat form untuk delete
         deleteForm = document.createElement('form');
         deleteForm.method = 'POST';
         deleteForm.action = '/admin/events/' + eventId;
         deleteForm.innerHTML = '<input type="hidden" name="_token" value="{{ csrf_token() }}">' +
                                '<input type="hidden" name="_method" value="DELETE">';
-        
-        // Tampilkan modal
         const modal = document.getElementById('deleteModal');
         modal.classList.remove('opacity-0', 'invisible');
         modal.classList.add('opacity-100', 'visible');
-    }
+    };
     
     function hideModal() {
         const modal = document.getElementById('deleteModal');
@@ -364,24 +535,17 @@
         hideModal();
     }
     
-    // Event listeners
     document.getElementById('cancelDeleteBtn')?.addEventListener('click', hideModal);
     document.getElementById('confirmDeleteBtn')?.addEventListener('click', confirmDelete);
     
-    // Tutup modal jika klik di luar area modal
     document.getElementById('deleteModal')?.addEventListener('click', function(e) {
-        if (e.target === this) {
-            hideModal();
-        }
+        if (e.target === this) hideModal();
     });
     
-    // Tutup modal dengan tombol ESC
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             const modal = document.getElementById('deleteModal');
-            if (modal && modal.classList.contains('opacity-100')) {
-                hideModal();
-            }
+            if (modal && modal.classList.contains('opacity-100')) hideModal();
         }
     });
 </script>
